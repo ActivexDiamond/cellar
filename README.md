@@ -1,5 +1,7 @@
 # Cellar
-A Cellular Automata simulator with a light templating-API for definning your own automatons. 
+A Cellular Automata simulation and creation framework. 
+
+Use a light but powerful templating-API to define your automatons. 
 
 It also comes with a graphical param-editor (Similar to Unity's component editor, but **much** smaller) that can be used by utilizing a number of simplified-GUI-widgets that it exposes. You can also write your own widgets by extending the Base (blank) widget.
 
