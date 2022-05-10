@@ -17,6 +17,7 @@ love.window.setMode(windowStats.windowW, windowStats.windowH)
 local SW, SH = love.window.getMode()
 
 local function Controller(world)
+	print("This class has been deprecated! Use `SmartController` instead.")
 	local self = {}
 	self.world = world
 	

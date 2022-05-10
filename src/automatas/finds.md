@@ -1,7 +1,6 @@
---[[
+# Simple
 
------------------------------- Simple ------------------------------
-========== Circular cave with large rocks inside.
+##  Circular cave with large rocks inside.
 survive: 3
 born: 5-8
 
@@ -25,5 +24,3 @@ With this setup;
 		The number and size of rocks in the center.
 		
 As always, {survive 0} leads to there being random single-cells left randomly around..
-
---]]
