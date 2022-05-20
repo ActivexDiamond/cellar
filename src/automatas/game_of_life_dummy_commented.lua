@@ -50,7 +50,7 @@ commons = {
 	generations = 15,					--[Optional] The number of generations to immediately compute after generation. Defaults to [0]. *
 	outOfBOundsState = "alive",			--For cells near the edge of the grid; What state should anything outside the grid considered to be? Can either be a string with the name of a cell, or a function**.
 	adjQuery = premade.HEX,				--[Semi-Optional] A function to use when fetching the adjacent-cells of a cell.***
-	gridIterator = premade.TL_TO_BR,	--[fu$%#ng optional]]A function defining the order in which to iterate over the grid.
+	gridIterator = premade.TL_TO_BR,	--[Optional]]A function defining the order in which to iterate over the grid.
 }
 
 --* Zero means that not a single step will be computed, and the world will simply show its initial configuration.
