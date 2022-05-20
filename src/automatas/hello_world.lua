@@ -1,15 +1,20 @@
+------------------------------ Window Config ------------------------------
+--Editor title.
+title = "Hello, world!"
+--A table holding window config paramaters, things like size, etc...
+windowConfig = {
+	w = 1080,							--Window width, in pixels.
+	h = 720,							--Window height, in pixels.
+	guiW = 350,							--Width of the GUI section of the window, in pixels.
+	guiH = 720,							--Height of the GUI section of the window, in pixels.
+}
+
 commons = {
 	gridW = 100,						
 	gridH = 100,						
-	outOfBOundsState = "empty",			
-	adjQuery = premade.HEX,				--`premade` is a table holding some functions that provide commonly-used behavior.
+	outOfBoundsState = "empty",			
+	adjQuery = premade.aHex,				--`premade` is a table holding some functions that provide commonly-used behavior.
 }
-
---A table holding all of the rules of your automaton.
-rules = {}
-
---A table of valid states in your automaton.
-rules.states = {}
 
 ---Ruleset data/params.
 rules.humanOdds = 0.2
@@ -17,9 +22,9 @@ rules.zombieOdds = 0.4
 
 function rules:generate(x, y)
 	local rng = math.random()
-	if rng >= self.humanOdds then
+	if rng <= self.humanOdds then
 		return "human"
-	elseif rng >= self.zombieOdds then
+	elseif rng <= self.zombieOdds then
 		return "zombie"
 	end
 
@@ -35,8 +40,8 @@ rules.states.human = {
 	end,
 	
 	--Called everytime a generation is iterated.
-	update = function(self, rules, world, neighbors, countedNeighbors, generation)
-		local zombies = countedNeighbors.zombie
+	update = function(self, rules, adj, countedAdj, generation)
+		local zombies = countedAdj.zombie
 		--Get bitten once by every zombie around!
 		self.health = self.health - zombies
 		if self.health <= 0 then
@@ -53,8 +58,8 @@ rules.states.zombie = {
 		self.hunger = 5
 	end,
 	
-	update = function(self, rules, world, neighbors, countedNeighbors, generation)
-		local humans = countedNeighbors.humans
+	update = function(self, rules, adj, countedAdj, generation)
+		local humans = countedAdj.human
 		--Zombies starve if no one is around!
 		if humans == 0 then
 			self.hunger = self.hunger - 1
@@ -67,9 +72,9 @@ rules.states.zombie = {
 }
 
 rules.states.empty = {
-	update = function(self, rules, world, neighbors, countedNeighbors, generation)
-		local humans = countedNeighbors.humans
-		local zombies = countedNeighbors.zombies
+	update = function(self, rules, adj, countedAdj, generation)
+		local humans = countedAdj.human
+		local zombies = countedAdj.zombie
 		--Repopulation.
 		if humans > 3 and humans > zombies then
 			return "human"
@@ -79,7 +84,9 @@ rules.states.empty = {
 }
 
 ------------------------------ GUI ------------------------------
-gui:addControl("outOfBoundsState", c.RADIO, {rules.states})
+--Add some common stuff like grid-resizing, screenshot, etc...
+premade.gcAll(controller)
+
 gui:addControl("humanOdds", c.SLIDER)
 gui:addControl("zombieOdds", c.SLIDER, {max = 0.5})
 gui:addControl("generations", c.BUTTON_STEPPER, {min = 0, max = 250})

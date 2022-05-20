@@ -4,7 +4,10 @@ local utils = require "libs.utils"
 
 ------------------------------ Constructor ------------------------------
 local SmartController = class("SmartController")
-function SmartController:init(headerText, windowConfig)
+function SmartController:init(headerText, config)
+	headerText = headerText or "Editor"
+	config = config or {}
+	
 	self.header = {id = "                 +  " .. headerText .. "  +"}
 	
 	--Window Drawing Config
@@ -15,10 +18,10 @@ function SmartController:init(headerText, windowConfig)
 		AllowMove = false,
 	}
 	
-	self.window.X = windowConfig.x or 0
-	self.window.Y = windowConfig.y or 0
-	self.window.W = windowConfig.w or 100
-	self.window.H = windowConfig.h or 400
+	self.window.X = config.x or 0
+	self.window.Y = config.y or 0
+	self.window.W = config.w or love.graphics.getHeight() / 8
+	self.window.H = config.h or love.graphics.getHeight()
 	
 	self.activeControls = {}
 	self.group = self.GLOBAL_GROUP
@@ -184,7 +187,7 @@ function SccActionButton:init(...)
 end
 function SccActionButton:update(dt)
 	if Slab.Button(self.varName) then
-		self.f()
+		self.f(self.target)
 	end
 end
 
@@ -214,8 +217,8 @@ function SmartController:addControl(varName, control, ...)
 		config = args[1]
 	end
 
-	assert(self.target, "[target] must be set before add controls!")
-	assert(self.updateFunc, "[updateFunc] must be set before add controls!")
+	assert(self.target, "[target] must be set before adding controls!")
+	assert(self.updateFunc, "[updateFunc] must be set before adding controls!")
 	local c = control(self, self.target, self.updateFunc, varName, config)
 	table.insert(self:_getActiveGroup(), i, c)
 end
@@ -247,6 +250,28 @@ function SmartController:_getActiveGroup()
 		self.activeControls[self.group] = {}
 	end
 	return self.activeControls[self.group]
+end
+
+------------------------------ Getters / Setters ------------------------------
+function SmartController:setHeaderText(str)
+	self.header = {id = "                 +  " .. str .. "  +"}
+end
+
+function SmartController:setConfig(config)
+	self.window.X = config.x or self.window.X
+	self.window.Y = config.y or self.window.Y
+	self.window.W = config.w or self.window.W
+	self.window.H = config.h or self.window.H
+end
+
+function SmartController:setPosition(x, y)
+	self.window.X = x
+	self.window.Y = y
+end
+
+function SmartController:setSize(w, h)
+	self.window.W = w
+	self.window.H = h
 end
 
 return SmartController

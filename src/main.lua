@@ -1,4 +1,6 @@
 ------------------------------ Dependencies ------------------------------
+local lovebird = require "libs.lovebird"
+lovebird.update()
 local utils = require "libs.utils"
 local Slab = require "libs.Slab"
 
@@ -14,19 +16,23 @@ local StateManager = require "StateManager"
 --controller:addControl("seed", c.RANDOMIZE, {max = 1e9})
 
 ------------------------------ Config ------------------------------
-local selected_automata = "automatas.hello_world"
+local selected_automata = "automatas/hello_world.lua"
+--local selected_automata = "automatas/game_of_life.lua"
 
 ------------------------------ Core API ------------------------------
 local stateManager;
 function love.load()
+	print("Running Lua version:\t" .. _VERSION)
+	print("Running Love2D version:\t" .. love.getVersion())
 	--Slab init.
 	Slab.SetINIStatePath(nil)
 	Slab.Initialize()
 	
-	stateManager = stateManager(selected_automata)
+	stateManager = StateManager(selected_automata)
 end
 
 function love.update(dt)
+	lovebird.update()
 	Slab.Update(dt)
 	stateManager:update(dt)
 end
@@ -34,7 +40,7 @@ end
 function love.draw()
 	local g2d = love.graphics
 	Slab.Draw()
-	stateManager:draw(g2d)	--probably wont have this
+	stateManager:draw(g2d)
 end
 
 
