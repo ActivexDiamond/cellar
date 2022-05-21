@@ -1,4 +1,5 @@
 local class = require "libs.cruxclass"
+local lovebird = require "libs.lovebird"
 
 local utils = require "libs.utils"
 
@@ -47,6 +48,18 @@ local function cloneTable(t)
 	return tc
 end
 
+local function selfWrap(self, ...)
+	local args = {...}
+	assert(#args > 0, "No functions to wrap.")
+	
+	local funcs = {}
+	for _, f in ipairs(args) do
+		funcs[#funcs + 1] = function(...)
+			return f(self, ...)
+		end
+	end
+	return unpack(funcs)
+end
 ------------------------------ Constructor ------------------------------
 local CellularWorld = class("CellularWorld")
 function CellularWorld:init(commons, rules)
@@ -74,6 +87,7 @@ end
 
 ------------------------------ API ------------------------------
 function CellularWorld:reset()
+	local start = love.timer.getTime()
 	--Reset state.
 	self.generationCount = 0
 	math.randomseed(self.seed)
@@ -83,43 +97,71 @@ function CellularWorld:reset()
 	--Used to cache update mid-generation so the adjQuery and gridIterator do not get confused.
 	self.bufferGrid = generateGrid(self.gridW, self.gridH, self.outOfBoundsState)
 	
-	for x, y, _ in self.gridIterator(self.grid) do
-		local name, args = self:generate(x, y)
-		local state = self:_newState(name, args)
-		self.grid[x][y] = state
-		self.bufferGrid[x][y] = state 
+	if self.generateAll then
+		--TODO: Should the last param be removed and newState made public, 
+		--	as self is passed in anyways?
+		self:generateAll(selfWrap(self, self._setCell, self._newState))
+	elseif self.generate then
+		for x, y, _ in self.gridIterator(self.grid) do
+			local name, args = self:generate(x, y)
+			local state = self:_newState(name, args)
+			self:_setCell(x, y, state)
+		end
+	else
+		error "No generator-function given!"
 	end
 	
 	if self.generations > 0 then
 		self:iterate(self.generations)
 	end
 	
+	local dur = love.timer.getTime() - start
+	local str = "Resetting up to `%d` generations took: %fs" 
+	print(str:format(self.generations, dur))
 end
 
 function CellularWorld:iterate(count)
 	self.generationCount = self.generationCount + 1
 	
+	if self.generationCount < self.generations then
+		local str = "Simulating generation...\t\t[%d/%d]"  
+		print(str:format(self.generationCount, self.generations))
+	else
+		local str = "Simulating generation...\t\t[%d]"
+		print(str:format(self.generationCount))
+	end
+	--TODO: Wrap `iterate` in a proper coroutine so it dosn't block everything!
+	lovebird.update()
+	
+	
 	for x, y, cell in self.gridIterator(self.grid) do
-		local adj, countedAdj = self.adjQuery(self.states,self.grid, x, y)
 		if cell.update then 
+			local adj, countedAdj = self.adjQuery(self.states,self.grid, x, y)
 			local name, args = cell:update(self, adj, countedAdj, self.generationCount)
 			--Actually have to set it back to `cell` in case of `nil` to keep buffer in sync.
 			self.bufferGrid[x][y] = name and self:_newState(name, args) or cell
-		end
+		else
+			self.bufferGrid[x][y] = cell
+		end 
 	end	
 	
 	--Swap buffers.
 	self.grid, self.bufferGrid = self.bufferGrid, self.grid
 	
 	--Tail-call implementations of the `count` param..
-	if count and count > 0 then return self:iterate(count - 1) end
+	if count and count > 1 then return self:iterate(count - 1) end
 end
 
 ------------------------------ Internals ------------------------------
-function CellularWorld:_newState(name, args)
+function CellularWorld:_setCell(x, y, state)
+	self.grid[x][y] = state
+	self.bufferGrid[x][y] = state
+end
+
+function CellularWorld:_newState(name, ...)
 	local state = cloneTable(self.states[name])
 	state.name = name
-	if state.init then state:init(unpack(args or {})) end
+	if state.init then state:init(...) end
 	return state
 end
 
@@ -143,14 +185,24 @@ end
 
 function CellularWorld:dDraw(g2d)
 	local t = self.debug
-	local sx = t.w / self.gridW 
+	local scale
+	if t.w <= t.h then
+		scale = t.w / self.gridW
+	else
+		scale = t.h / self.gridH
+	end
+	 
 	--Disable to prevent potentil stretching.
 	--TODO: Smarter scaling.
 	g2d.push('all')
 		g2d.translate(t.x, t.y)
-		g2d.scale(sx)
+		g2d.scale(scale)
 		for x, y, cell in self.gridIterator(self.grid) do
-			g2d.setColor(t.colors[cell.name])
+			if cell.name then
+				g2d.setColor(t.colors[cell.name])
+			else
+				g2d.setColor(1, 0, 0)
+			end
 			g2d.rectangle('fill', x, y, 4, 4)
 		end
 	g2d.pop()
@@ -158,10 +210,11 @@ end
 
 ------------------------------ Accessors ------------------------------
 function CellularWorld:change(opt, reset)
+	local doTime = false
 	for k, v in pairs(opt) do
-		print(k, v)
 		self[k] = v
 	end
+	
 	if reset then
 		self:reset()
 	end

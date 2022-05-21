@@ -10,8 +10,9 @@ windowConfig = {
 }
 
 commons = {
-	gridW = 100,						
-	gridH = 100,						
+	gridW = 300,						
+	gridH = 580,	
+	generations = 5,					
 	outOfBoundsState = "empty",			
 	adjQuery = premade.aHex,				--`premade` is a table holding some functions that provide commonly-used behavior.
 }
@@ -20,16 +21,19 @@ commons = {
 rules.humanOdds = 0.2
 rules.zombieOdds = 0.4
 
-function rules:generate(x, y)
-	local rng = math.random()
-	if rng <= self.humanOdds then
-		return "human"
-	elseif rng <= self.zombieOdds then
-		return "zombie"
-	end
+rules.path = "automatas/covid/uni_floor_g.png"
+rules.legend = {
+	empty = {1, 1, 1, 0},
+	wall = {0, 0, 0},
+	
+	human = {0, 0, 1},
+	zombie = {0, 1, 0},
+}
+rules.generateAll = premade.maFromImage
 
-	return "empty"
-end
+--function rules.generate()
+--	return "wall"
+--end
 
 --Starting off with our first state, "human", we declare a table that holds all data and logic for that state.
 rules.states.human = {
@@ -83,17 +87,21 @@ rules.states.empty = {
 	end,
 }
 
+rules.states.wall = {
+}
+
 ------------------------------ GUI ------------------------------
 --Add some common stuff like grid-resizing, screenshot, etc...
-premade.gcAll(controller)
+premade.gcAll(gui)
 
 gui:addControl("humanOdds", c.SLIDER)
 gui:addControl("zombieOdds", c.SLIDER, {max = 0.5})
-gui:addControl("generations", c.BUTTON_STEPPER, {min = 0, max = 250})
-	
+
 --Just used for drawing. Key should be the same as the keys (`name`s) used above.
 colors = {
-	empty = {1, 1, 1},
-	human = {0, 0, 1},
-	zombie = {0, 1, 0},
+	empty = {1, 1, 1, 1},
+	wall = {0, 0, 0, 1},
+	
+	human = {0, 0, 1, 1},
+	zombie = {0, 1, 0, 1},
 }

@@ -8,12 +8,34 @@ local SmartController = require "SmartController"
 local CellularWorld = require "CellularWorld" 
 
 ------------------------------ Automata Environment ------------------------------
-local _SANDBOXES_OS = {
+local _SANDBOXED_OS = {
 	clock = os.clock,
 	date = os.date,
 	difftime = os.difftime,
 	time = os.time,
 }
+
+local _SANDBOXED_LOVE_FS
+do
+	--Localize incase it is called from an ENV with no access to those.
+	local love = love
+	local assert = assert
+	local setfenv = setfenv
+	local getfenv = getfenv
+	local print = print
+
+	_SANDBOXED_LOVE_FS = {
+		load = function(path)
+			local f, msg = love.filesystem.load(path)
+			assert(f, msg)
+			local env = getfenv(2)
+--			print("StateManager | getfenv(2)", env)
+--			print("StateManager | _G", _G)
+			setfenv(f, env)
+			return f
+		end
+	}
+end
 
 local AUTOMATA_ENV = {
 	--Lua metadata.
@@ -25,6 +47,9 @@ local AUTOMATA_ENV = {
 	tonumber = tonumber,
 	tostring = tostring,
 	
+	--Environment
+	setfenv = setfenv,
+	getfenv = getfenv,	
 	
 	--Lua control and loops.
 	pairs = pairs,
@@ -50,12 +75,13 @@ local AUTOMATA_ENV = {
 	table = table,
 	math = math,
 	string = string,
-	os = _SANDBOXES_OS,	--Only includes time-related functions!
+	os = _SANDBOXED_OS,	--Only includes time-related functions!
 	bit = bit,
 		
 	--Love.
 	love = {
 		audio = love.audio,
+		filesystem = _SANDBOXED_LOVE_FS,
 		graphics = love.graphics,
 		image = love.image,
 		joystick = love.joystick,
@@ -69,13 +95,16 @@ local AUTOMATA_ENV = {
 		video = love.video,
 		window = love.window,					--TODO: Remove mutating functions.
 		
+		getVersion = love.getVersion,
 	},
 	
 	--Libs.
 	Checker = Checker,
 	
 	--Automata-related.
-	premade = premade
+	premade = premade,
+	
+	--Extra
 }
 
 ------------------------------ Helpers ------------------------------
@@ -90,7 +119,11 @@ end
 local function updateFunc(varName, newVal, oldVal, target)
 	local str = "Changing %s from %s to %s."
 	print(str:format(varName, oldVal, newVal))
-	target:change({[varName] = newVal}, true)
+	target:change({
+		generations = target.generationCount,
+		[varName] = newVal,
+	}, true)
+	print(varName, newVal, target.generationCount)
 end
 
 ------------------------------ Locals ------------------------------
@@ -145,8 +178,9 @@ function StateManager:_loadAutomata(automataPath)
 	local f, msg = love.filesystem.load(automataPath)
 	assert(f, msg)
 	setfenv(f, env)
-	local succ, msg = pcall(f)
-	assert(succ, AUTOMATA_ERROR:format(automataPath, msg))
+--	local succ, msg = pcall(f)
+--	assert(succ, AUTOMATA_ERROR:format(automataPath, msg))
+	f()	--TODO: Figure out how to get stack trace.
 	
 	--Fetch results.
 	if env.windowConfig.w and env.windowConfig.h then

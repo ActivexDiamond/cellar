@@ -16,12 +16,15 @@ local StateManager = require "StateManager"
 --controller:addControl("seed", c.RANDOMIZE, {max = 1e9})
 
 ------------------------------ Config ------------------------------
-local selected_automata = "automatas/hello_world.lua"
+--local selected_automata = "automatas/hello_world.lua"
 --local selected_automata = "automatas/game_of_life.lua"
+local selected_automata = "automatas/covid/covid1.lua"
 
 ------------------------------ Core API ------------------------------
 local stateManager;
 function love.load()
+	lovebird.updateinterval = 0.001
+
 	print("Running Lua version:\t" .. _VERSION)
 	print("Running Love2D version:\t" .. love.getVersion())
 	--Slab init.
@@ -42,6 +45,5 @@ function love.draw()
 	Slab.Draw()
 	stateManager:draw(g2d)
 end
-
 
 
