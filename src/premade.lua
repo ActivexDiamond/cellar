@@ -13,6 +13,12 @@ local premade = {}
 --	h	;	helper
 
 ------------------------------ Helpers ------------------------------
+local PATH = (...):match("(.+)%.[^%.]+$") or (...)
+function premade.hGetCwd()
+	--Kikito's CWD trick.
+	return PATH 
+end
+
 function premade.hDecodePixel(px, legend)
 	for k, v in pairs(legend) do
 		if (px[1] == v[1] and px[2] == v[2] and

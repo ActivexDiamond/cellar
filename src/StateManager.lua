@@ -32,6 +32,10 @@ do
 	local print = print
 
 	_SANDBOXED_LOVE_FS = {
+		getRealDirectory = love.filesystem.getRealDirectory,
+		newFile = love.filesystem.newFile,
+		newFile = love.filesystem.newFileData,
+	
 		load = function(path)
 			local f, msg = love.filesystem.load(path)
 			assert(f, msg)

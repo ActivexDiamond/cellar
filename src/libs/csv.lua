@@ -513,12 +513,19 @@ local function open(
   filename,         -- string: name of the file to open
   parameters)       -- ?table: parameters controlling reading the file.
                     -- See README.md
-  local file, message = io.open(filename, "r")
-  if not file then return nil, message end
+  --local file, message = io.open(filename, "r")
+  --if not file then return nil, message end
 
+  local file = love.filesystem.newFile(filename, "r")
+  if not file then return nil, "Can't open file." end
+  local str = file:read()
+  if not str then return nil, "Can't read from file." end
+  file:close()
+  
   parameters = parameters or {}
   parameters.filename = filename
-  return use(file_buffer:new(file), parameters)
+  --return use(file_buffer:new(file), parameters)
+  return use(str, parameters)
 end
 
 

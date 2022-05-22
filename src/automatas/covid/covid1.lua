@@ -28,8 +28,10 @@ rules.legend = {
 ------------------------------ Process .csv ------------------------------
 rules.surveyData = {}
 do
-	local path = "src/automatas/covid/survey_data.csv"
+	local path = "automatas/covid/survey_data.csv"
 	local data = csv.open(path, {header = true})
+	assert(data, "File-path issue related to operating system.")
+	
 	for fields in data:lines() do
 		local t = {}
 		local str = ""
