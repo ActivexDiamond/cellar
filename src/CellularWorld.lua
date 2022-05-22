@@ -1,4 +1,4 @@
-local class = require "libs.cruxclass"
+local class = require "libs.middleclass"
 local lovebird = require "libs.lovebird"
 
 local utils = require "libs.utils"
@@ -62,7 +62,7 @@ local function selfWrap(self, ...)
 end
 ------------------------------ Constructor ------------------------------
 local CellularWorld = class("CellularWorld")
-function CellularWorld:init(commons, rules)
+function CellularWorld:initialize(commons, rules)
 	--Init defaults.
 	self:change(DEFAULT_COMMONS)
 	self:change(DEFAULT_RULES)
@@ -79,6 +79,19 @@ function CellularWorld:init(commons, rules)
 		w = love.graphics.getWidth(),
 		h = love.graphics.getHeight(),
 	}
+	
+	--FIXME: Put this somewhere better.
+	function love.keypressed(key, scancode, isrepeat)
+		if key == 'escape' then
+			love.event.quit()
+		elseif key == 'space' then
+			self:iterate()
+		elseif key == 'backspace' then
+			self:change({
+				generations = self.generationCount - 1
+			}, true)
+		end
+	end
 end
 
 ------------------------------ Core API ------------------------------
@@ -137,9 +150,12 @@ function CellularWorld:iterate(count)
 	for x, y, cell in self.gridIterator(self.grid) do
 		if cell.update then 
 			local adj, countedAdj = self.adjQuery(self.states,self.grid, x, y)
-			local name, args = cell:update(self, adj, countedAdj, self.generationCount)
+			--TODO: Replace this with proper arg-catching.
+			local name, a, b,  c, d = cell:update(adj, countedAdj, self.generationCount)
 			--Actually have to set it back to `cell` in case of `nil` to keep buffer in sync.
-			self.bufferGrid[x][y] = name and self:_newState(name, args) or cell
+			local val = name and self:_newState(name, a, b,  c, d) or cell
+--			print("update", cell, name, a, b, x, y, val)
+			self.bufferGrid[x][y] = val
 		else
 			self.bufferGrid[x][y] = cell
 		end 
@@ -154,15 +170,20 @@ end
 
 ------------------------------ Internals ------------------------------
 function CellularWorld:_setCell(x, y, state)
+	--Only use during initial generation as this does NOT respect buffer-swapping!!!
+	--TODO: Move this to `_newState`, somehow.
+	state.x = x
+	state.y = y
+	
 	self.grid[x][y] = state
 	self.bufferGrid[x][y] = state
 end
 
 function CellularWorld:_newState(name, ...)
-	local state = cloneTable(self.states[name])
-	state.name = name
-	if state.init then state:init(...) end
-	return state
+	local inst = self.states[name](self, ...)
+	--TODO: Better design on the name field.
+	inst.name = inst.class.name
+	return inst
 end
 
 ------------------------------ Debugging ------------------------------
@@ -171,22 +192,30 @@ function CellularWorld:dSetDrawTransform(opt)
 	self.debug.y = opt.y or self.debug.y
 	self.debug.w = opt.w or self.debug.w
 	self.debug.h = opt.h or self.debug.h
+	
+	print(self.debug.w, self.debug.h)
 end
 
 function CellularWorld:dSetDrawColors(colors)
 	--Fill any missing colors with random ones.
+	print("=> Echoing `debugDraw` colors.")
 	for k, v in pairs(self.states) do
 		if not colors[k] then
 			colors[k] = {math.random(), math.random(), math.random(), 1}
 		end
+		print(k, unpack(colors[k]))
 	end
 	self.debug.colors = colors
 end
 
 function CellularWorld:dDraw(g2d)
+	--FIXME: Magic number.
+	local W = 4
+	
 	local t = self.debug
 	local scale
-	if t.w <= t.h then
+	--FIXME: Scaling doesn't work correctly.
+	if true then
 		scale = t.w / self.gridW
 	else
 		scale = t.h / self.gridH
@@ -198,12 +227,8 @@ function CellularWorld:dDraw(g2d)
 		g2d.translate(t.x, t.y)
 		g2d.scale(scale)
 		for x, y, cell in self.gridIterator(self.grid) do
-			if cell.name then
-				g2d.setColor(t.colors[cell.name])
-			else
-				g2d.setColor(1, 0, 0)
-			end
-			g2d.rectangle('fill', x, y, 4, 4)
+			g2d.setColor(t.colors[cell.name] or {0.5, 0.5, 0.2, 1})
+			g2d.rectangle('fill', x, y, W, W)
 		end
 	g2d.pop()
 end

@@ -8,15 +8,19 @@
 title = "Hello, world!"
 --A table holding window config paramaters, things like size, etc...
 windowConfig = {
-	w = 1080,							--Window width, in pixels.
-	h = 720,							--Window height, in pixels.
+	fullscreen = true,
+	display = 1,
+	--w = 1920,							--Window width, in pixels.
+	--h = 1080,							--Window height, in pixels.
 	guiW = 350,							--Width of the GUI section of the window, in pixels.
-	guiH = 720,							--Height of the GUI section of the window, in pixels.
+	--guiH = 720,							--Height of the GUI section of the window, in pixels.
+	--worldX = 0
+	worldY = 200
 }
 
 commons = {
-	gridW = 300,						
-	gridH = 580,						
-	outOfBoundsState = "wall",			
+	gridW = 580,						
+	gridH = 300,						
+	outOfBoundsState = "Wall",			
 	adjQuery = premade.aHex,				--`premade` is a table holding some functions that provide commonly-used behavior.
 }

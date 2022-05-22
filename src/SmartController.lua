@@ -1,10 +1,10 @@
 local Slab = require "libs.Slab"
-local class = require "libs.cruxclass"
+local class = require "libs.middleclass"
 local utils = require "libs.utils"
 
 ------------------------------ Constructor ------------------------------
 local SmartController = class("SmartController")
-function SmartController:init(headerText, config)
+function SmartController:initialize(headerText, config)
 	headerText = headerText or "Editor"
 	config = config or {}
 	
@@ -30,7 +30,7 @@ end
 ------------------------------ Smart Controls - Controls ------------------------------
 ---Base
 local SccBase = class("SccBase")
-function SccBase:init(parent, target, updateFunc, varName, config)
+function SccBase:initialize(parent, target, updateFunc, varName, config)
 	self.parent = parent
 	self.target = target
 	self._updateFunc = updateFunc
@@ -61,8 +61,8 @@ end
 
 ---Label
 local SccLabel = class("SccLabel", SccBase)
-function SccLabel:init(...)
-	SccBase.init(self, ...)
+function SccLabel:initialize(...)
+	SccBase.initialize(self, ...)
 end
 function SccLabel:update(dt)
 	SccBase.update(self, dt)
@@ -71,8 +71,8 @@ end
 
 ---Randomize
 local SccRandomize = class("SccRandomize", SccBase)
-function SccRandomize:init(...)
-	SccBase.init(self, ...)
+function SccRandomize:initialize(...)
+	SccBase.initialize(self, ...)
 	self.min = self.config.min or 0
 	self.max = self.config.max or 1
 end
@@ -85,8 +85,8 @@ end
 
 ---Checkbox
 local SccCheckbox = class("SccCheckbox", SccBase)
-function SccCheckbox:init(...)
-	SccBase.init(self, ...)
+function SccCheckbox:initialize(...)
+	SccBase.initialize(self, ...)
 	self.includeValInTextualDisplay = false
 end
 function SccCheckbox:update(dt)
@@ -98,8 +98,8 @@ end
 
 ---Slider
 local SccSlider = class("SccSlider", SccBase)
-function SccSlider:init(...)
-	SccBase.init(self, ...)
+function SccSlider:initialize(...)
+	SccBase.initialize(self, ...)
 	self.includeValInTextualDisplay = false
 	self.min = self.config.min or 0
 	self.max = self.config.max or 1
@@ -116,8 +116,8 @@ end
 
 ---ButtonStepper
 local SccButtonStepper = class("SccButtonStepper", SccBase)
-function SccButtonStepper:init(...)
-	SccBase.init(self, ...)
+function SccButtonStepper:initialize(...)
+	SccBase.initialize(self, ...)
 	self.includeValInTextualDisplay = false
 
 	self.steps = self.config.steps or {1}
@@ -156,8 +156,8 @@ end
 
 ---CheckboxList
 local SccCheckboxList = class("SccCheckboxList", SccBase)
-function SccCheckboxList:init(...)
-	SccBase.init(self, ...)
+function SccCheckboxList:initialize(...)
+	SccBase.initialize(self, ...)
 	self.includeValInTextualDisplay = false
 
 	self.count = self.config.count or #self:_getVal()
@@ -179,8 +179,8 @@ end
 
 ---ActionButton
 local SccActionButton = class("SccActionButton", SccBase)
-function SccActionButton:init(...)
-	SccBase.init(self, ...)
+function SccActionButton:initialize(...)
+	SccBase.initialize(self, ...)
 	self.includeValInTextualDisplay = false
 
 	self.f = self.config.f

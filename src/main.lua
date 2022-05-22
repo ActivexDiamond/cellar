@@ -46,4 +46,3 @@ function love.draw()
 	stateManager:draw(g2d)
 end
 
-

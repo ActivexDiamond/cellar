@@ -1,6 +1,8 @@
-local class = require "libs.cruxclass"
+local class = require "libs.middleclass"
 
 local Checker = require "libs.Checker"
+local csv = require "libs.csv"
+local inspect = require "libs.inspect"
 
 local premade = require "premade"
 
@@ -13,6 +15,11 @@ local _SANDBOXED_OS = {
 	date = os.date,
 	difftime = os.difftime,
 	time = os.time,
+}
+
+local _SANDBOXED_IO = {
+	write = io.write,
+	read = io.read,
 }
 
 local _SANDBOXED_LOVE_FS
@@ -77,7 +84,8 @@ local AUTOMATA_ENV = {
 	string = string,
 	os = _SANDBOXED_OS,	--Only includes time-related functions!
 	bit = bit,
-		
+	io = _SANDBOXED_IO,
+	
 	--Love.
 	love = {
 		audio = love.audio,
@@ -100,6 +108,9 @@ local AUTOMATA_ENV = {
 	
 	--Libs.
 	Checker = Checker,
+	csv = csv,
+	inspect = inspect,
+	class = class,
 	
 	--Automata-related.
 	premade = premade,
@@ -129,12 +140,9 @@ end
 ------------------------------ Locals ------------------------------
 local AUTOMATA_ERROR = "An error was raised during execution of your automata.\nPath: %s.\nError: %s"
 
---CWD trick thanks to Kikito.
-local CWD = (...):match("(.+)%.[^%.]+$") or (...)	
-
 ------------------------------ Constructor ------------------------------
 local StateManager = class("StateManager")
-function StateManager:init(automataPath)
+function StateManager:initialize(automataPath)
 	self:_loadAutomata(automataPath)
 end
 
@@ -183,10 +191,26 @@ function StateManager:_loadAutomata(automataPath)
 	f()	--TODO: Figure out how to get stack trace.
 	
 	--Fetch results.
-	if env.windowConfig.w and env.windowConfig.h then
+	if env.windowConfig.fullscreen then
+		local flags = {
+			fullscreen = true,		
+			display = env.windowConfig.display,
+		}
+		
+		love.window.setMode(0, 0, flags)
+		
+		local w, h = love.window.getMode()
+		env.windowConfig.w = w
+		env.windowConfig.h = h
+		env.windowConfig.guiH = h
+	elseif env.windowConfig.w and env.windowConfig.h then
 		love.window.setMode(env.windowConfig.w, env.windowConfig.h)
 	end
-	self.controller:setConfig{w = env.windowConfig.guiW, h = env.windowConfig.guiH}
+	
+	self.controller:setConfig{
+		w = env.windowConfig.guiW, 
+		h = env.windowConfig.guiH
+	}
 
 	self.controller:setHeaderText(env.title)
 	
@@ -195,10 +219,10 @@ function StateManager:_loadAutomata(automataPath)
 	self.world:reset()
 	
 	self.world:dSetDrawTransform{
-		x = env.windowConfig.guiW,
-		y = 0,
+		x = env.windowConfig.worldX or env.windowConfig.guiW,
+		y = env.windowConfig.worldY or 0,
 		w = env.windowConfig.w - env.windowConfig.guiW,
-		h = env.windowConfig.h
+		h = env.windowConfig.h,
 	}
 	self.world:dSetDrawColors(env.colors)
 	

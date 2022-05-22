@@ -42,6 +42,22 @@ function premade.hWeightedRandom(t, forceUpdate)
 	return tw[rng]
 end
 
+function premade.hLeftPad(str, len, pad)
+	pad = pad or " "
+	while #str < len do
+		str = pad .. str
+	end
+	return str
+end
+
+function premade.hRightPad(str, len, pad)
+	pad = pad or " "
+	while #str < len do
+		str = str .. pad
+	end
+	return str
+end
+
 ------------------------------ Adjacent Queries ------------------------------
 function premade.aHex(states, grid, x, y)
 	local adj, adjCount = {}, {}
@@ -96,6 +112,7 @@ function premade.maFromImageIterator(rules, set, new)
 		local imgData = love.image.newImageData(rules.path)
 		
 		local w, h = imgData:getDimensions()
+		--TODO: Grab it automatically.
 		assert(w == rules.gridW and h == rules.gridH, "Image dimensions do not match grid dimensions!")
 		for x = 0, w - 1 do
 			for y = 0, h - 1 do
