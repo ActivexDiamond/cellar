@@ -181,13 +181,17 @@ end
 local SccActionButton = class("SccActionButton", SccBase)
 function SccActionButton:initialize(...)
 	SccBase.initialize(self, ...)
-	self.includeValInTextualDisplay = false
 
 	self.f = self.config.f
+	self.title = self.config.title or self.varName
 end
 function SccActionButton:update(dt)
-	if Slab.Button(self.varName) then
+	if Slab.Button(self.title) then
 		self.f(self.target)
+	end
+	if self:_getVal() then
+		Slab.SameLine()
+		Slab.Text(self:_getVal())
 	end
 end
 
@@ -206,20 +210,16 @@ SmartController.Controls = {
 SmartController.GLOBAL_GROUP = {}			-- unique key
 
 ---Control Accessors
-function SmartController:addControl(varName, control, ...)
-	local args = {...}
-	local i, config
-	if type(args[1]) == 'number' then
-		i = args[1]
-		config = args[2]
-	else
-		i = #self:_getActiveGroup() + 1
-		config = args[1]
-	end
+function SmartController:addControl(varName, control, config, target, updateFunc)
+	config = config or {}
+	target = target or self.target
+	updateFunc = updateFunc or self.updateFunc
 
-	assert(self.target, "[target] must be set before adding controls!")
-	assert(self.updateFunc, "[updateFunc] must be set before adding controls!")
-	local c = control(self, self.target, self.updateFunc, varName, config)
+	local i = #self:_getActiveGroup() + 1
+
+	assert(target, "[target] must be set before adding controls (or passed in)!")
+	assert(updateFunc, "[updateFunc] must be set before adding controls (or passed in)!")
+	local c = control(self, target, updateFunc, varName, config)
 	table.insert(self:_getActiveGroup(), i, c)
 end
 

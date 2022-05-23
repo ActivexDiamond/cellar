@@ -8,14 +8,14 @@
 title = "Hello, world!"
 --A table holding window config paramaters, things like size, etc...
 windowConfig = {
-	fullscreen = true,
-	display = 1,
-	--w = 1920,							--Window width, in pixels.
-	--h = 1080,							--Window height, in pixels.
-	guiW = 350,							--Width of the GUI section of the window, in pixels.
-	--guiH = 720,							--Height of the GUI section of the window, in pixels.
+	--fullscreen = true,
+	--display = 1,
+	w = 1800,							--Window width, in pixels.
+	h = 900,							--Window height, in pixels.
+	guiW = 400,							--Width of the GUI section of the window, in pixels.
+	--guiH = 900,							--Height of the GUI section of the window, in pixels.
 	--worldX = 0
-	worldY = 200
+	worldY = 100
 }
 
 commons = {

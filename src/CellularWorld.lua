@@ -80,6 +80,7 @@ function CellularWorld:initialize(commons, rules)
 		h = love.graphics.getHeight(),
 	}
 	
+		
 	--FIXME: Put this somewhere better.
 	function love.keypressed(key, scancode, isrepeat)
 		if key == 'escape' then
@@ -90,12 +91,29 @@ function CellularWorld:initialize(commons, rules)
 			self:change({
 				generations = self.generationCount - 1
 			}, true)
+		elseif key == 'f' then
+			--TEMP: Quick and dirty fullscreen.
+			love.window.setMode(1800, 900, {fullscreen = self.fsToggle})
+			self.debug.w = love.graphics.getWidth() - 400
+			self.debug.h = love.graphics.getHeight()		
+			self.fsToggle = not self.fsToggle
 		end
 	end
+	self.fsToggle = true
+	--Auto Iterate Defaults
+	self.autoIterate = false
+	self.autoIterateFrequency = 0.2
+	
+	--State
+	self.lastIteration = 0
 end
 
 ------------------------------ Core API ------------------------------
 function CellularWorld:update()
+	if self.autoIterate and 
+			love.timer.getTime() - self.lastIteration > self.autoIterateFrequency then
+		self:iterate()
+	end	
 end
 
 ------------------------------ API ------------------------------
@@ -163,7 +181,9 @@ function CellularWorld:iterate(count)
 	
 	--Swap buffers.
 	self.grid, self.bufferGrid = self.bufferGrid, self.grid
-	
+
+	--Would be nicer to only compute once for multiple iterations-in-batch, but then we won't get tail calls.	
+	self.lastIteration = love.timer.getTime()
 	--Tail-call implementations of the `count` param..
 	if count and count > 1 then return self:iterate(count - 1) end
 end
@@ -186,7 +206,7 @@ function CellularWorld:_newState(name, ...)
 	return inst
 end
 
------------------------------- Debugging ------------------------------
+-------------------------------- Debugging ------------------------------
 function CellularWorld:dSetDrawTransform(opt)
 	self.debug.x = opt.x or self.debug.x
 	self.debug.y = opt.y or self.debug.y
@@ -243,6 +263,14 @@ function CellularWorld:change(opt, reset)
 	if reset then
 		self:reset()
 	end
+end
+
+function CellularWorld:setAutoIterate(bool)
+	self.autoIterate = bool
+end
+
+function CellularWorld:setAutoIterateFrequency(freq)
+	self.autoIterateFrequency = freq
 end
 
 return CellularWorld

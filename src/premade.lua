@@ -101,22 +101,11 @@ function premade.iLeftRightDown(grid)
 	end)
 end
 
------------------------------- Grouped ------------------------------
-function premade.gcAll(controller)
-	--premade.gGridSize(controller)
-	premade.gScreenshot(controller)
-	premade.gSeed(controller)
-	premade.gCurrentGeneration(controller)
-	premade.gIterate(controller)
-	premade.gIterateBack(controller)
-	premade.gReset(controller)
-end
-
 ------------------------------ Map ----------------------------
 function premade.maFromImageIterator(rules, set, new)
 	return coroutine.wrap(function()
 		local imgData = love.image.newImageData(rules.path)
-		
+		print(rules.path)
 		local w, h = imgData:getDimensions()
 		--TODO: Grab it automatically.
 		assert(w == rules.gridW and h == rules.gridH, "Image dimensions do not match grid dimensions!")
@@ -149,6 +138,19 @@ function premade.maFromImage(rules, set, new)
 			end
 		end
 	end
+end
+
+------------------------------ Grouped ------------------------------
+function premade.gcAll(controller)
+	--premade.gGridSize(controller)
+	premade.gScreenshot(controller)
+	premade.gSeed(controller)
+	premade.gCurrentGeneration(controller)
+	premade.gIterate(controller)
+	premade.gIterateBack(controller)
+	premade.gReset(controller)
+	premade.gAutoIterate(controller)
+	premade.gAutoIterateFrequency(controller)
 end
 
 ------------------------------ Controls ------------------------------
@@ -202,12 +204,18 @@ end
 
 function premade.gAutoIterate(controller)
 	local c = controller.Controls
-	controller:addControl("autoIterate", c.CHECKBOX)
+	controller:addControl("autoIterate", c.CHECKBOX, nil, nil, 
+			function(varName, newVal, oldVal, target)
+				target:setAutoIterate(newVal)
+			end)
 end
 
 function premade.gAutoIterateFrequency(controller)
 	local c = controller.Controls
-	controller:addControl("autoIterateFrequency", c.SLIDER, {step = 0.2, min = 0.02, max = 10})
+	controller:addControl("autoIterateFrequency", c.BUTTON_STEPPER, {steps = {0.2, 0.02}, min = 0, max = 10}, 
+			nil, function(varName, newVal, oldVal, target)
+				target:setAutoIterateFrequency(newVal)
+			end)
 end
 
 return premade

@@ -16,7 +16,13 @@ rules.zombieOdds = 0.4
 
 print(commons.gridW, commons.gridH)
 
-rules.path = "automatas/covid/uni_floor_g.png"
+local MAPS = {
+	"automatas/covid/uni_floor_g.png",
+	"automatas/covid/uni_floor_g_nocaf.png",
+}
+local activeMap = 1 
+rules.path = MAPS[activeMap]
+
 rules.legend = {
 	Wall = {0, 0, 0, 1},
 
@@ -30,6 +36,7 @@ rules.surveyData = {}
 do
 	local path = "automatas/covid/survey_data.csv"
 	local data = csv.open(path, {header = true})
+	
 	assert(data, "File-path issue related to operating system.")
 	
 	for fields in data:lines() do
@@ -261,9 +268,18 @@ function rules.states.Virus:update(adj, countedAdj, generation)
 	end
 end
 
------------------------------- GUI ------------------------------
+------------------------------ GUI - Basic ------------------------------
 premade.gcAll(gui)
 
+------------------------------ GUI - Map Controls ------------------------------
+gui:addControl("path", c.ACTION_BUTTON, {title = "Switch Map", f = function(target)
+	activeMap = math.max((activeMap + 1) % (#MAPS + 1), 1)
+	target.path = MAPS[activeMap]
+	print("Switching map to:", activeMap)
+	target:reset()
+end})
+
+------------------------------ GUI - Data Visualization ------------------------------
 gui:addControl("Echo Stats", c.ACTION_BUTTON, {f = function(target)
 	local count = setmetatable({}, {
 		__index = function(t, k) return 0 end

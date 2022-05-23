@@ -138,7 +138,6 @@ local function updateFunc(varName, newVal, oldVal, target)
 		generations = target.generationCount,
 		[varName] = newVal,
 	}, true)
-	print(varName, newVal, target.generationCount)
 end
 
 ------------------------------ Locals ------------------------------
@@ -213,7 +212,7 @@ function StateManager:_loadAutomata(automataPath)
 	
 	self.controller:setConfig{
 		w = env.windowConfig.guiW, 
-		h = env.windowConfig.guiH
+		h = env.windowConfig.guiH or love.graphics.getHeight()
 	}
 
 	self.controller:setHeaderText(env.title)
