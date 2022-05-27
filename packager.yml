@@ -1,0 +1,19 @@
+name: cellar
+description: A Cellular Automata simulation manager, runner, GUI-editor (tweaking) and creation-framework.
+version: beta-1.4.4
+
+output: releases
+
+shortname: cellar
+icon: icon.png
+
+assets:
+    - "src/**/*"
+
+targets:
+    - love
+    - web
+    - win-32
+    - win-64
+    - linux
+    - mac

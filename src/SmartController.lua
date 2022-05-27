@@ -20,7 +20,7 @@ function SmartController:initialize(headerText, config)
 	
 	self.window.X = config.x or 0
 	self.window.Y = config.y or 0
-	self.window.W = config.w or love.graphics.getHeight() / 8
+	self.window.W = config.w or love.graphics.getWidth() / 8
 	self.window.H = config.h or love.graphics.getHeight()
 	
 	self.activeControls = {}
@@ -67,6 +67,15 @@ end
 function SccLabel:update(dt)
 	SccBase.update(self, dt)
 	Slab.NewLine()
+end
+
+---StaticLabel
+local SccStaticLabel = class("SccStaticLabel", SccBase)
+function SccStaticLabel:initialize(...)
+	SccBase.initialize(self, ...)
+end
+function SccStaticLabel:update(dt)
+	Slab.Textf(self.varName)
 end
 
 ---Randomize
@@ -200,6 +209,7 @@ end
 SmartController.Controls = {
 	BASE = SccBase,
 	LABEL = SccLabel,
+	STATIC_LABEL = SccStaticLabel,
 	RANDOMIZE = SccRandomize,
 	CHECKBOX = SccCheckbox,
 	SLIDER = SccSlider,

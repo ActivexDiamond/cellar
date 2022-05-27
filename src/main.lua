@@ -16,11 +16,15 @@ local StateManager = require "StateManager"
 --controller:addControl("seed", c.RANDOMIZE, {max = 1e9})
 
 ------------------------------ Config ------------------------------
+
 --local selected_automata = "automatas/hello_world.lua"
 --local selected_automata = "automatas/game_of_life.lua"
 local selected_automata = "automatas/covid/covid1.lua"
+--local selected_automata = "automatas/quick_icon.lua"
 
 ------------------------------ Core API ------------------------------
+--TEMP: Should be more thoughtful of font mangement.
+local robotoMonoFont;
 local stateManager;
 function love.load()
 	lovebird.updateinterval = 0.001
@@ -30,7 +34,10 @@ function love.load()
 	--Slab init.
 	Slab.SetINIStatePath(nil)
 	Slab.Initialize()
-	
+
+	robotoMonoFont = love.graphics.newFont("assets/fonts/roboto_mono/RobotoMono-Regular.ttf")
+	Slab.PushFont(robotoMonoFont)
+		
 	stateManager = StateManager(selected_automata)
 end
 
@@ -42,6 +49,7 @@ end
 
 function love.draw()
 	local g2d = love.graphics
+	
 	Slab.Draw()
 	stateManager:draw(g2d)
 end

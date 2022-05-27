@@ -5,7 +5,7 @@
 --print("Boilerplate | getfenv(3)", getfenv(3))
 --print("Boilerplate | _G", _G)
 
-title = "Hello, world!"
+title = "Covid Simulator 4001!"
 --A table holding window config paramaters, things like size, etc...
 windowConfig = {
 	--fullscreen = true,

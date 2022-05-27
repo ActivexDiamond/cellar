@@ -2,7 +2,7 @@ function love.conf(t)
   -- Commented out defaults shown below.
   -- See https://www.love2d.org/wiki/Config_Files for more information.
 
-  -- t.identity = nil                    -- The name of the save directory (string)
+   t.identity = "Cellular Automata Simulator"                    -- The name of the save directory (string)
   -- t.appendidentity = false            -- Search files in source directory before save directory (boolean)
    t.version = "11.0"                  -- The L�VE version this game was made for (string)
    t.console = true                   -- Attach a console (boolean, Windows only)

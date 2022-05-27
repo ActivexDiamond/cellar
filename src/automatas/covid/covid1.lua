@@ -272,7 +272,7 @@ end
 premade.gcAll(gui)
 
 ------------------------------ GUI - Map Controls ------------------------------
-gui:addControl("path", c.ACTION_BUTTON, {title = "Switch Map", f = function(target)
+gui:addControl("path", c.ACTION_BUTTON, {title = "Cycle Map", f = function(target)
 	activeMap = math.max((activeMap + 1) % (#MAPS + 1), 1)
 	target.path = MAPS[activeMap]
 	print("Switching map to:", activeMap)
@@ -301,6 +301,56 @@ gui:addControl("Echo Stats", c.ACTION_BUTTON, {f = function(target)
 	print(str:format("Total", total))
 
 end})
+
+------------------------------ GUI - Instructions ------------------------------
+local helpStr =
+[[
+
+
+
+========== ----- ~~~ ----- ==========
+=> Keybinds
+Step           -> [SPACEBAR]
+BackStep       -> [BACKSPACE]
+Fullscreen     -> [F]
+Quit           -> [ESCAPE]
+
+=> Help
+Screenshot   -> Saved at:
+  Windows: "%appdata%/CellularAutomataSimulator"
+  MacOS:   "AppSupport/CellularAutomataSimulator"
+  *nix:    ".local/share//CellularAutomataSimulator"
+Seed           -> Randomizes at the currrent generation.
+Step           -> Simulate one generation.
+BackStep       -> Undo one generation.
+Reset          -> Reset generation count to 0.
+AutoIterate    -> Enable automatic stepping.
+AutoIterateFreq-> Time between auto-steps in seconds. 
+Cycle Map      -> Cycle between all loaded maps.
+Echo Stats     -> Compute stats for current generation,
+  and echoes to console.
+  
+=> Notes
+The console can be accessed at `localhost:8000`,
+  from any browser.
+  
+=> Warnings
+Change any of the simulations setting will force it to
+recompute from scratch up until the curent generation.
+Doing so with a high generation count will cause problems
+and lag severly.
+
+=> Legend
+Black          -> Wall.
+White          -> Empty. 
+Blue           -> Uninfected human.
+Yellow          -> Infected human.
+Red          -> Severly ill (hospitalized)  human.
+Green          -> Virus
+========== ----- ~~~ ----- ==========
+]]
+
+gui:addControl(helpStr, c.STATIC_LABEL)
 
 ------------------------------ Colors ------------------------------
 colors = {

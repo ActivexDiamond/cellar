@@ -118,8 +118,6 @@ local AUTOMATA_ENV = {
 	
 	--Automata-related.
 	premade = premade,
-	
-	--Extra
 }
 
 ------------------------------ Helpers ------------------------------
