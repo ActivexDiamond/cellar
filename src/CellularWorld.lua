@@ -247,8 +247,12 @@ function CellularWorld:dDraw(g2d)
 		g2d.translate(t.x, t.y)
 		g2d.scale(scale)
 		for x, y, cell in self.gridIterator(self.grid) do
-			g2d.setColor(t.colors[cell.name] or {0.5, 0.5, 0.2, 1})
-			g2d.rectangle('fill', x, y, W, W)
+			if cell.draw then 
+				cell:draw(g2d)
+			else
+				g2d.setColor(t.colors[cell.name] or {0.5, 0.5, 0.2, 1})
+				g2d.rectangle('fill', x, y, W, W)
+			end
 		end
 	g2d.pop()
 end
