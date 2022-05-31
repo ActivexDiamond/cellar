@@ -64,9 +64,36 @@ function premade.hRightPad(str, len, pad)
 	return str
 end
 
+function premade.hStateCounter(t, states)
+	local count = {}
+	--Init all to 0.
+	for k, _ in pairs(states) do
+		count[k] = 0
+	end
+	
+	--Count neighbors.
+	for _, v in ipairs(t) do
+		count[v.name] = count[v.name] + 1	
+	end
+	
+	return count
+end
+
 ------------------------------ Adjacent Queries ------------------------------
+function premade.aCardinal(states, grid, x, y)
+	local adj = {}
+
+	--Fetch neighbors.	
+	 table.insert(adj, grid[x + 1][y])
+	 table.insert(adj, grid[x - 1][y])
+	 table.insert(adj, grid[x][y + 1])
+	 table.insert(adj, grid[x][y - 1])
+
+	return adj, premade.hAdjCounter(adj, states)	
+end
+
 function premade.aHex(states, grid, x, y)
-	local adj, adjCount = {}, {}
+	local adj = {}
 
 	--Fetch neighbors.	
 	for ix = x - 1, x + 1 do
@@ -77,17 +104,7 @@ function premade.aHex(states, grid, x, y)
 		end
 	end
 	
-	--Init all to 0.
-	for k, _ in pairs(states) do
-		adjCount[k] = 0
-	end
-	
-	--Count neighbors.
-	for _, v in ipairs(adj) do
-		adjCount[v.name] = adjCount[v.name] + 1	
-	end
-	
-	return adj, adjCount
+	return adj, premade.hAdjCounter(adj, states)
 end
 
 ------------------------------ Grid Iterators ------------------------------

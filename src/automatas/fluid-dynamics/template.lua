@@ -1,10 +1,9 @@
 ------------------------------ Window Config ------------------------------
 title = "Blank Automata Template"
 windowConfig = {
-	w = 1150,
-	h = 1150,
-	guiW = 350,
-	guiH = 600,
+	w = 1080,
+	h = 720,
+	guiW = 300,
 }
 
 ------------------------------ Commons ------------------------------
@@ -13,8 +12,8 @@ commons = {
 	gridH = 100,
 	seed = 10^9,
 	generations = 15,
-	outOfBoundsState = "Alive",
-	adjQuery = premade.aHex,
+	outOfBoundsState = "BaseFluid",
+	adjQuery = premade.aCardinal,
 	gridIterator = premade.iLeftRightDown,
 }
 
