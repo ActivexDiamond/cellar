@@ -153,10 +153,10 @@ function rules.states.BaseFluid:advect(b)
 	--Initial change value.
 	local x = self.x - dt0 * self.vx
 	local y = self.y - dt0 * self.vy
-	--Lower bound
+	--Upper bound
 	x = math.max(x, 0.5)
 	y = math.max(y, 0.5)
-	--Upper bound
+	--Lower bound
 	x = math.min(x, N + 0.5)
 	y = math.min(y, N + 0.5)
 	--Position intensities
