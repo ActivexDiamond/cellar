@@ -89,7 +89,7 @@ function premade.aCardinal(states, grid, x, y)
 	 table.insert(adj, grid[x][y + 1])
 	 table.insert(adj, grid[x][y - 1])
 
-	return adj, premade.hAdjCounter(adj, states)	
+	return adj, premade.hStateCounter(adj, states)	
 end
 
 function premade.aHex(states, grid, x, y)
@@ -104,7 +104,7 @@ function premade.aHex(states, grid, x, y)
 		end
 	end
 	
-	return adj, premade.hAdjCounter(adj, states)
+	return adj, premade.hStateCounter(adj, states)
 end
 
 ------------------------------ Grid Iterators ------------------------------

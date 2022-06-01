@@ -8,7 +8,7 @@ function SmartController:initialize(headerText, config)
 	headerText = headerText or "Editor"
 	config = config or {}
 	
-	self.header = {id = "                 +  " .. headerText .. "  +"}
+	self.header = {id = "    +  " .. headerText .. "  +"}
 	
 	--Window Drawing Config
 	self.window = {
@@ -264,7 +264,7 @@ end
 
 ------------------------------ Getters / Setters ------------------------------
 function SmartController:setHeaderText(str)
-	self.header = {id = "                 +  " .. str .. "  +"}
+	self.header = {id = "    +  " .. str .. "  +"}
 end
 
 function SmartController:setConfig(config)

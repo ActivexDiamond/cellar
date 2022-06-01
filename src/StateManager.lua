@@ -89,6 +89,7 @@ local AUTOMATA_ENV = {
 	os = _SANDBOXED_OS,	--Only includes time-related functions!
 	bit = bit,
 	io = _SANDBOXED_IO,
+	coroutine = coroutine,
 	
 	--Love.
 	love = {

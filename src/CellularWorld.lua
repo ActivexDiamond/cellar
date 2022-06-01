@@ -22,15 +22,19 @@ local DEFAULT_RULES = {
 
 ------------------------------ Helpers ------------------------------
 --Creates a blank grid.
-local gridMetatable = {__index = function(t, k)
-	return {name = t.outOfBoundsState} 
+local mtStateReturner = {__index = function(t, k)
+	return t.rules:_newState(t.rules.outOfBoundsState) 
 end}
 
-local function generateGrid(w, h, outOfBoundsState)
-	local grid = setmetatable({outOfBoundsState = outOfBoundsState}, gridMetatable)
-	for x = 1, w do
-		grid[x] = {}
-		for y = 1, h do
+local mtRowReturner = {__index = function(t, k)
+	return setmetatable({rules = t.rules}, mtStateReturner) 
+end}
+
+local function generateGrid(self)
+	local grid = setmetatable({rules = self}, mtRowReturner)
+	for x = 1, self.gridW do
+		grid[x] = setmetatable({rules = self}, mtStateReturner)
+		for y = 1, self.gridH do
 			grid[x][y] = {}
 		end
 	end
@@ -124,9 +128,9 @@ function CellularWorld:reset()
 	math.randomseed(self.seed)
 	
 	--Init grid.
-	self.grid = generateGrid(self.gridW, self.gridH, self.outOfBoundsState)
+	self.grid = generateGrid(self)
 	--Used to cache update mid-generation so the adjQuery and gridIterator do not get confused.
-	self.bufferGrid = generateGrid(self.gridW, self.gridH, self.outOfBoundsState)
+	self.bufferGrid = generateGrid(self)
 	
 	if self.generateAll then
 		--TODO: Should the last param be removed and newState made public, 
@@ -134,8 +138,9 @@ function CellularWorld:reset()
 		self:generateAll(selfWrap(self, self._setCell, self._newState))
 	elseif self.generate then
 		for x, y, _ in self.gridIterator(self.grid) do
-			local name, args = self:generate(x, y)
-			local state = self:_newState(name, args)
+			local args = {self:generate(x, y)}
+			local name = table.remove(args, 1)
+			local state = self:_newState(name, unpack(args))
 			self:_setCell(x, y, state)
 		end
 	else
@@ -258,6 +263,10 @@ function CellularWorld:dDraw(g2d)
 end
 
 ------------------------------ Accessors ------------------------------
+function CellularWorld:getCell(x, y)
+	return self.grid[x][y]
+end
+
 function CellularWorld:change(opt, reset)
 	local doTime = false
 	for k, v in pairs(opt) do

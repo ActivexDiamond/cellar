@@ -19,8 +19,9 @@ local StateManager = require "StateManager"
 
 --local selected_automata = "automatas/hello_world.lua"
 --local selected_automata = "automatas/game_of_life.lua"
-local selected_automata = "automatas/covid/covid1.lua"
+--local selected_automata = "automatas/covid/covid1.lua"
 --local selected_automata = "automatas/quick_icon.lua"
+local selected_automata = "automatas/fluid-dynamics/core.lua"
 
 ------------------------------ Core API ------------------------------
 --TEMP: Should be more thoughtful of font mangement.
