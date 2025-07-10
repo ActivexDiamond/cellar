@@ -5,8 +5,10 @@ Use a light but powerful templating-API to define your automatons.
 
 It also comes with a graphical param-editor (Similar to Unity's component editor, but **much** smaller) that can be used by utilizing a number of simplified-GUI-widgets that it exposes. You can also write your own widgets by extending the Base (blank) widget.
 
-# TODO
-- Proper docs!
+# Docs
+Find the docs [here](https://github.com/ActivexDiamond/cellar/blob/main/DOCS.md).
+
+Documentation is mostly done. All API documentation is done but some extra stuff like rationale or design goals are still WIP.
 
 # Example: Hello World
 ```lua
