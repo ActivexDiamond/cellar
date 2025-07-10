@@ -1,4 +1,4 @@
-rules.modifiers = {
+Irules.modifiers = {
 	gender = {
 		male = {
 			infection = 100,
